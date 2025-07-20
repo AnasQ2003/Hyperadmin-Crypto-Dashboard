@@ -1,0 +1,3303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperAdmin - Advanced Crypto Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --dark: #121212;
+            --dark-light: #1e1e1e;
+            --darker: #0a0a0a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-dark: #495057;
+            --success: #28a745;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #17a2b8;
+            --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --glass-bg: rgba(30, 30, 30, 0.5);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            background-image: url('https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=2232&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: overlay;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            overflow-y: auto;
+            z-index: 100;
+            transition: var(--transition);
+            border-right: var(--glass-border);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-title i {
+            margin-right: 10px;
+            color: var(--primary-light);
+        }
+
+        .menu-category {
+            color: var(--gray);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin: 1.5rem 0 0.5rem 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0.8rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--light);
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary-light);
+            transform: translateX(5px);
+        }
+
+        .menu-item:hover i, .menu-item.active i {
+            color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            font-weight: 500;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item.active::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar-footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 1.5rem;
+            background-color: rgba(18, 18, 18, 0.6);
+            backdrop-filter: blur(20px);
+            overflow-y: auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+            width: 300px;
+            min-width: 200px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 0.8rem 1.5rem 0.8rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .search-container input::placeholder {
+            color: var(--gray);
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 12px;
+            color: var(--gray);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-btn, .user-btn {
+            background: transparent;
+            border: none;
+            color: var(--light);
+            font-size: 1.2rem;
+            margin-left: 1rem;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .notification-btn:hover, .user-btn:hover {
+            color: var(--primary-light);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: var(--glass-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(67, 97, 238, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .dashboard-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .positive {
+            color: var(--success);
+        }
+
+        .negative {
+            color: var(--danger);
+        }
+
+        /* Crypto Cards */
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .crypto-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: var(--glass-border);
+        }
+
+        .crypto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .crypto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .crypto-name {
+            display: flex;
+            align-items: center;
+        }
+
+        .crypto-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 1.2rem;
+            color: var(--primary-light);
+        }
+
+        .crypto-symbol {
+            font-weight: 600;
+        }
+
+        .crypto-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .crypto-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        /* Trading Section */
+        .trading-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            height: 350px;
+            border: var(--glass-border);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .time-filters {
+            display: flex;
+        }
+
+        .time-filter {
+            padding: 0.3rem 0.8rem;
+            margin-left: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray);
+        }
+
+        .time-filter:hover, .time-filter.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Order Form */
+        .order-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: var(--glass-border);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .form-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--gray);
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .form-tab:hover, .form-tab.active {
+            color: var(--primary-light);
+            border-bottom-color: var(--primary-light);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 48%;
+        }
+
+        .btn-buy {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-buy:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-sell {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-sell:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+        }
+
+        /* Tables Section */
+        .tables-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: var(--glass-border);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        th {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Wallet Section */
+        .wallet-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border: var(--glass-border);
+        }
+
+        .wallet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .wallet-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .wallet-actions {
+            display: flex;
+        }
+
+        .wallet-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+        }
+
+        .wallet-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .wallet-btn.primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .wallet-btn.primary:hover {
+            background-color: var(--secondary);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .wallet-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .wallet-table th, .wallet-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .wallet-table th {
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            font-size: 0.9rem;
+            color: var(--gray);
+            border: var(--glass-border);
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 350px;
+            background: var(--dark-light);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateY(20px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-dropdown.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .notification-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-title {
+            font-weight: 600;
+        }
+
+        .mark-all-read {
+            color: var(--primary-light);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .notification-item.unread {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .notification-footer {
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .view-all-notifications {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            z-index: 999;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .trading-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .tables-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -250px;
+                width: 250px;
+                height: 100vh;
+                z-index: 1000;
+                transition: var(--transition);
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .search-container {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--dark-light);
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .modal-btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-secondary {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-light);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-info {
+            border-left-color: var(--primary);
+        }
+
+        .toast-success {
+            border-left-color: var(--success);
+        }
+
+        .toast-error {
+            border-left-color: var(--danger);
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+        }
+
+        /* Section Content */
+        .section-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: var(--glass-border);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary-light);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Portfolio Chart */
+        .portfolio-chart {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border: var(--glass-border);
+            height: 350px;
+        }
+
+        /* Market Overview */
+        .market-overview {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border: var(--glass-border);
+        }
+
+        /* Transaction History */
+        .transaction-history {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border: var(--glass-border);
+        }
+
+        /* Settings Form */
+        .settings-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            border: var(--glass-border);
+        }
+
+        /* Glow Effect */
+        .glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center, rgba(67, 97, 238, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="glow"></div>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title"><i class="fas fa-bolt"></i>HyperAdmin</h3>
+            </div>
+            
+            <div class="menu-category">PERSONAL</div>
+            <div class="menu-item active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </div>
+            
+            <div class="menu-category">CRYPTO</div>
+            <div class="menu-item" data-section="wallet">
+                <i class="fas fa-wallet"></i>
+                Wallet
+            </div>
+            <div class="menu-item" data-section="transactions">
+                <i class="fas fa-exchange-alt"></i>
+                Transactions
+            </div>
+            <div class="menu-item" data-section="portfolio">
+                <i class="fas fa-chart-pie"></i>
+                Portfolio
+            </div>
+            <div class="menu-item" data-section="market">
+                <i class="fas fa-chart-bar"></i>
+                Market Overview
+            </div>
+            
+            <div class="menu-category">CONTROL</div>
+            <div class="menu-item" data-section="settings">
+                <i class="fas fa-cog"></i>
+                Settings
+            </div>
+            <div class="menu-item" data-section="notifications">
+                <i class="fas fa-bell"></i>
+                Notifications
+            </div>
+            
+            <div class="sidebar-footer">
+                © 2025 Qureshi<br>
+                All Rights Reserved
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search cryptocurrencies..." id="searchInput">
+                </div>
+                
+                <div class="user-actions">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    
+                    <button class="user-btn" id="userBtn">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    
+                    <!-- Notification Dropdown -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <span class="notification-title">Notifications</span>
+                            <button class="mark-all-read" id="markAllRead">Mark all as read</button>
+                        </div>
+                        
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-item unread">
+                                <div class="notification-message">Bitcoin price alert: BTC has reached $57,000</div>
+                                <div class="notification-time">10 minutes ago</div>
+                            </div>
+                            
+                            <div class="notification-item unread">
+                                <div class="notification-message">New Ethereum update available</div>
+                                <div class="notification-time">2 hours ago</div>
+                            </div>
+                            
+                            <div class="notification-item unread">
+                                <div class="notification-message">Your deposit of 0.5 BTC has been confirmed</div>
+                                <div class="notification-time">5 hours ago</div>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-message">Weekly portfolio report available</div>
+                                <div class="notification-time">1 day ago</div>
+                            </div>
+                            
+                            <div class="notification-item">
+                                <div class="notification-message">Market news: Crypto market cap reaches $2T</div>
+                                <div class="notification-time">2 days ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-footer">
+                            <a href="#" class="view-all-notifications" id="viewAllNotifications">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div class="section-content active" id="dashboard-section">
+                <!-- Stats Grid -->
+                <div class="stats-grid animate-fade">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-value">$24,589</div>
+                        <div class="stat-label">Portfolio Value</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-value positive">+12.5%</div>
+                        <div class="stat-label">24h Change</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fab fa-bitcoin"></i>
+                        </div>
+                        <div class="stat-value">0.42 BTC</div>
+                        <div class="stat-label">BTC Holdings</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-value">5.7 ETH</div>
+                        <div class="stat-label">ETH Holdings</div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid animate-fade">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">ETH | BTC</div>
+                            <div class="card-change negative">-0.50%</div>
+                        </div>
+                        <div class="card-value">159.73 USD</div>
+                        <div class="card-change">7342 USD</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">BTC | BTC</div>
+                            <div class="card-change negative">-0.10%</div>
+                        </div>
+                        <div class="card-value">5,719 USD</div>
+                        <div class="card-change">267.72 USD</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">XRP | BTC</div>
+                            <div class="card-change negative">-0.50%</div>
+                        </div>
+                        <div class="card-value">0.2974 USD</div>
+                        <div class="card-change">BTC | BTC</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <div class="card-title">BTC | BTC</div>
+                            <div class="card-change negative">-51%</div>
+                        </div>
+                        <div class="card-value">5,497.49 USD</div>
+                        <div class="card-change">Value: 12,946 BTC</div>
+                    </div>
+                </div>
+
+                <!-- Trading Section -->
+                <div class="trading-section animate-fade">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Bitcoin Price Chart</div>
+                            <div class="time-filters">
+                                <span class="time-filter" data-period="1D">1D</span>
+                                <span class="time-filter active" data-period="1W">1W</span>
+                                <span class="time-filter" data-period="1M">1M</span>
+                                <span class="time-filter" data-period="1Y">1Y</span>
+                                <span class="time-filter" data-period="ALL">ALL</span>
+                            </div>
+                        </div>
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                    
+                    <div class="order-form">
+                        <div class="form-header">
+                            <div class="form-title">Trade</div>
+                            <div class="form-tabs">
+                                <div class="form-tab active" data-tab="buy">Buy</div>
+                                <div class="form-tab" data-tab="sell">Sell</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="asset">Asset</label>
+                            <select id="asset" class="form-control">
+                                <option value="BTC">BTC</option>
+                                <option value="ETH">ETH</option>
+                                <option value="LTC">LTC</option>
+                                <option value="XRP">XRP</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <div style="display: flex;">
+                                <input type="text" id="amount" class="form-control" placeholder="0.00">
+                                <button id="maxAmount" style="margin-left: 0.5rem; padding: 0 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 5px; cursor: pointer; color: var(--light);">MAX</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="price">Limit Price</label>
+                            <input type="text" id="price" class="form-control" placeholder="$987.55">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Fee</label>
+                            <div id="feeAmount" style="color: var(--gray); font-size: 0.9rem;">0.0000000 USDC</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Total</label>
+                            <div id="totalAmount" style="color: var(--gray); font-size: 0.9rem;">0.0000000 USDC</div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-buy" id="buyBtn">BUY</button>
+                            <button class="btn btn-sell" id="sellBtn">SELL</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Crypto Grid -->
+                <div class="crypto-grid animate-fade">
+                    <div class="crypto-card" data-coin="bitcoin">
+                        <div class="crypto-header">
+                            <div class="crypto-name">
+                                <div class="crypto-icon">
+                                    <i class="fab fa-bitcoin"></i>
+                                </div>
+                                <div>
+                                    <div class="crypto-symbol">Bitcoin</div>
+                                    <div class="card-change">BTC</div>
+                                </div>
+                            </div>
+                            <div class="card-change positive">+4.54%</div>
+                        </div>
+                        <div class="crypto-price">2,340000434 BTC</div>
+                        <div class="card-value">40.04</div>
+                    </div>
+                    
+                    <div class="crypto-card" data-coin="litecoin">
+                        <div class="crypto-header">
+                            <div class="crypto-name">
+                                <div class="crypto-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div>
+                                    <div class="crypto-symbol">Litecoin</div>
+                                    <div class="card-change">LTC</div>
+                                </div>
+                            </div>
+                            <div class="card-change positive">+2.35%</div>
+                        </div>
+                        <div class="crypto-price">1,340000434 LTC</div>
+                        <div class="card-value">39.14</div>
+                    </div>
+                    
+                    <div class="crypto-card" data-coin="neo">
+                        <div class="crypto-header">
+                            <div class="crypto-name">
+                                <div class="crypto-icon">
+                                    <i class="fas fa-project-diagram"></i>
+                                </div>
+                                <div>
+                                    <div class="crypto-symbol">Neo</div>
+                                    <div class="card-change">NEO</div>
+                                </div>
+                            </div>
+                            <div class="card-change positive">+4.95%</div>
+                        </div>
+                        <div class="crypto-price">0.30000434 NEO</div>
+                        <div class="card-value">$5.06</div>
+                    </div>
+                </div>
+
+                <!-- Tables Section -->
+                <div class="tables-section animate-fade">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Time & Sales</div>
+                        </div>
+                        <table id="timeSalesTable">
+                            <thead>
+                                <tr>
+                                    <th>Time (UTC)</th>
+                                    <th>Price</th>
+                                    <th>Size</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Market Overview</div>
+                        </div>
+                        <table id="marketOverviewTable">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Price</th>
+                                    <th>Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Section -->
+            <div class="section-content" id="wallet-section">
+                <div class="wallet-section animate-fade">
+                    <div class="wallet-header">
+                        <div class="wallet-title">Wallet Balance</div>
+                        <div class="wallet-actions">
+                            <button class="wallet-btn" id="depositBtn">DEPOSIT</button>
+                            <button class="wallet-btn" id="withdrawBtn">WITHDRAW</button>
+                        </div>
+                    </div>
+                    
+                    <table class="wallet-table" id="walletTable">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th>Amount</th>
+                                <th>Value</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="portfolio-chart">
+                    <div class="chart-header">
+                        <div class="chart-title">Portfolio Allocation</div>
+                    </div>
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div class="section-content" id="transactions-section">
+                <div class="transaction-history animate-fade">
+                    <div class="table-header">
+                        <div class="table-title">Transaction History</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Asset</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2023-06-15 14:30</td>
+                                <td>Buy</td>
+                                <td>BTC</td>
+                                <td>0.05 BTC</td>
+                                <td class="positive">Completed</td>
+                            </tr>
+                            <tr>
+                                <td>2023-06-14 09:15</td>
+                                <td>Sell</td>
+                                <td>ETH</td>
+                                <td>1.2 ETH</td>
+                                <td class="positive">Completed</td>
+                            </tr>
+                            <tr>
+                                <td>2023-06-12 18:45</td>
+                                <td>Deposit</td>
+                                <td>USDC</td>
+                                <td>500 USDC</td>
+                                <td class="positive">Completed</td>
+                            </tr>
+                            <tr>
+                                <td>2023-06-10 11:20</td>
+                                <td>Withdraw</td>
+                                <td>BTC</td>
+                                <td>0.01 BTC</td>
+                                <td class="warning">Pending</td>
+                            </tr>
+                            <tr>
+                                <td>2023-06-08 16:10</td>
+                                <td>Buy</td>
+                                <td>LTC</td>
+                                <td>5 LTC</td>
+                                <td class="positive">Completed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Portfolio Section -->
+            <div class="section-content" id="portfolio-section">
+                <div class="portfolio-chart animate-fade">
+                    <div class="chart-header">
+                        <div class="chart-title">Portfolio Performance</div>
+                    </div>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-value">$24,589</div>
+                        <div class="stat-label">Portfolio Value</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-value positive">+12.5%</div>
+                        <div class="stat-label">24h Change</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="stat-value positive">+32.1%</div>
+                        <div class="stat-label">7d Change</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="stat-value negative">-5.4%</div>
+                        <div class="stat-label">30d Change</div>
+                    </div>
+                </div>
+                
+                <div class="tables-section">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Asset Allocation</div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Amount</th>
+                                    <th>Value</th>
+                                    <th>% of Portfolio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Bitcoin (BTC)</td>
+                                    <td>0.42 BTC</td>
+                                    <td>$12,589</td>
+                                    <td>51.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Ethereum (ETH)</td>
+                                    <td>5.7 ETH</td>
+                                    <td>$7,589</td>
+                                    <td>30.9%</td>
+                                </tr>
+                                <tr>
+                                    <td>Litecoin (LTC)</td>
+                                    <td>12.4 LTC</td>
+                                    <td>$1,245</td>
+                                    <td>5.1%</td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>-</td>
+                                    <td>$3,166</td>
+                                    <td>12.8%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Recent Performance</div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>24h</th>
+                                    <th>7d</th>
+                                    <th>30d</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BTC</td>
+                                    <td class="positive">+3.2%</td>
+                                    <td class="positive">+15.4%</td>
+                                    <td class="negative">-8.1%</td>
+                                </tr>
+                                <tr>
+                                    <td>ETH</td>
+                                    <td class="positive">+5.7%</td>
+                                    <td class="positive">+22.3%</td>
+                                    <td class="positive">+4.5%</td>
+                                </tr>
+                                <tr>
+                                    <td>LTC</td>
+                                    <td class="negative">-1.2%</td>
+                                    <td class="positive">+8.9%</td>
+                                    <td class="negative">-12.4%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Overview Section -->
+            <div class="section-content" id="market-section">
+                <div class="market-overview animate-fade">
+                    <div class="chart-header">
+                        <div class="chart-title">Market Capitalization</div>
+                    </div>
+                    <canvas id="marketCapChart"></canvas>
+                </div>
+                
+                <div class="tables-section">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Top Gainers</div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Price</th>
+                                    <th>24h Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Bitcoin (BTC)</td>
+                                    <td>$28,589</td>
+                                    <td class="positive">+5.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Ethereum (ETH)</td>
+                                    <td>$1,789</td>
+                                    <td class="positive">+7.3%</td>
+                                </tr>
+                                <tr>
+                                    <td>Solana (SOL)</td>
+                                    <td>$24.56</td>
+                                    <td class="positive">+12.4%</td>
+                                </tr>
+                                <tr>
+                                    <td>Cardano (ADA)</td>
+                                    <td>$0.38</td>
+                                    <td class="positive">+3.8%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">Top Losers</div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Price</th>
+                                    <th>24h Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Polygon (MATIC)</td>
+                                    <td>$0.89</td>
+                                    <td class="negative">-3.2%</td>
+                                </tr>
+                                <tr>
+                                    <td>Polkadot (DOT)</td>
+                                    <td>$5.67</td>
+                                    <td class="negative">-2.1%</td>
+                                </tr>
+                                <tr>
+                                    <td>Dogecoin (DOGE)</td>
+                                    <td>$0.07</td>
+                                    <td class="negative">-1.8%</td>
+                                </tr>
+                                <tr>
+                                    <td>Shiba Inu (SHIB)</td>
+                                    <td>$0.000008</td>
+                                    <td class="negative">-4.5%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="market-overview">
+                    <div class="chart-header">
+                        <div class="chart-title">Trading Volume (24h)</div>
+                    </div>
+                    <canvas id="volumeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="section-content" id="settings-section">
+                <div class="settings-form animate-fade">
+                    <h2 style="margin-bottom: 1.5rem;">Account Settings</h2>
+                    
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" class="form-control" value="crypto_trader">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" value="user@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="timezone">Timezone</label>
+                        <select id="timezone" class="form-control">
+                            <option value="UTC">UTC</option>
+                            <option value="EST" selected>Eastern Time (EST)</option>
+                            <option value="PST">Pacific Time (PST)</option>
+                            <option value="GMT">GMT</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Security</label>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <span>2FA Authentication</span>
+                            <button style="padding: 0.3rem 0.8rem; background: rgba(67, 97, 238, 0.1); border: 1px solid var(--primary); border-radius: 5px; color: var(--primary); cursor: pointer;">Enable</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-buy" style="width: 100%; margin-top: 1rem;">Save Changes</button>
+                </div>
+                
+                <div class="settings-form animate-fade" style="margin-top: 1.5rem;">
+                    <h2 style="margin-bottom: 1.5rem;">Change Password</h2>
+                    
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" class="form-control">
+                    </div>
+                    
+                    <button class="btn btn-buy" style="width: 100%; margin-top: 1rem;">Update Password</button>
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div class="section-content" id="notifications-section">
+                <div class="table-container animate-fade">
+                    <div class="table-header">
+                        <div class="table-title">Notification Settings</div>
+                    </div>
+                    
+                    <div style="padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div>
+                                <div style="font-weight: 500;">Price Alerts</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">Receive notifications when prices reach your targets</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div>
+                                <div style="font-weight: 500;">Deposit/Withdrawal Alerts</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">Get notified when transactions are completed</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div>
+                                <div style="font-weight: 500;">Security Alerts</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">Notifications about account security</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <div style="font-weight: 500;">Newsletter</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">Weekly market updates and news</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container animate-fade" style="margin-top: 1.5rem;">
+                    <div class="table-header">
+                        <div class="table-title">Recent Notifications</div>
+                    </div>
+                    
+                    <div style="padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div>
+                                <div style="font-weight: 500;">Bitcoin price alert</div>
+                                <div style="font-size: 0.9rem; margin: 0.3rem 0;">BTC has reached $28,500</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">10 minutes ago</div>
+                            </div>
+                            <button style="background: none; border: none; color: var(--gray); cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div>
+                                <div style="font-weight: 500;">Deposit confirmed</div>
+                                <div style="font-size: 0.9rem; margin: 0.3rem 0;">0.5 ETH has been deposited to your wallet</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">2 hours ago</div>
+                            </div>
+                            <button style="background: none; border: none; color: var(--gray); cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div>
+                                <div style="font-weight: 500;">Weekly report</div>
+                                <div style="font-size: 0.9rem; margin: 0.3rem 0;">Your weekly portfolio report is ready</div>
+                                <div style="font-size: 0.8rem; color: var(--gray);">1 day ago</div>
+                            </div>
+                            <button style="background: none; border: none; color: var(--gray); cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer animate-fade">
+                <div>© 2023 Qureshi. All Rights Reserved.</div>
+                <div class="footer-links">
+                    <a href="#" id="faqLink">FAQ</a>
+                    <a href="#" id="purchaseLink">Purchase Now</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <div class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Deposit Funds</h3>
+                <button class="close-modal" id="closeDepositModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="depositAsset">Asset</label>
+                    <select id="depositAsset" class="form-control">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="USDC">USD Coin (USDC)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="depositAmount">Amount</label>
+                    <input type="text" id="depositAmount" class="form-control" placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label>Deposit Address</label>
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 5px; font-size: 0.9rem; word-break: break-all;" id="depositAddress">
+                        3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5
+                    </div>
+                    <button id="copyAddress" style="margin-top: 0.5rem; padding: 0.3rem 0.6rem; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 5px; cursor: pointer; color: var(--light); font-size: 0.8rem;">
+                        <i class="fas fa-copy"></i> Copy Address
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="cancelDeposit">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirmDeposit">Generate New Address</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Withdraw Funds</h3>
+                <button class="close-modal" id="closeWithdrawModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="withdrawAsset">Asset</label>
+                    <select id="withdrawAsset" class="form-control">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="USDC">USD Coin (USDC)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="withdrawAmount">Amount</label>
+                    <input type="text" id="withdrawAmount" class="form-control" placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="withdrawAddress">Destination Address</label>
+                    <input type="text" id="withdrawAddress" class="form-control" placeholder="Enter wallet address">
+                </div>
+                
+                <div class="form-group">
+                    <label>Network Fee</label>
+                    <div style="color: var(--gray); font-size: 0.9rem;" id="withdrawFee">0.0005 BTC</div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="cancelWithdraw">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirmWithdraw">Withdraw</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">User Profile</h3>
+                <button class="close-modal" id="closeUserModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="width: 80px; height: 80px; background: rgba(67, 97, 238, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 1rem; font-size: 2rem;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h4 style="margin-bottom: 0.5rem;">John Doe</h4>
+                    <p style="color: var(--gray); font-size: 0.9rem;">john.doe@example.com</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Account Level</label>
+                    <div style="background: rgba(67, 97, 238, 0.1); padding: 0.5rem; border-radius: 5px; color: var(--primary);">Verified</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Security</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span>2FA Authentication</span>
+                        <button style="padding: 0.3rem 0.8rem; background: rgba(67, 97, 238, 0.1); border: 1px solid var(--primary); border-radius: 5px; color: var(--primary); cursor: pointer;">Enable</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="logoutBtn">Logout</button>
+                <button class="modal-btn modal-btn-primary" id="settingsBtn">Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock API Data
+        const cryptoData = {
+            BTC: {
+                name: "Bitcoin",
+                symbol: "BTC",
+                price: 28589.42,
+                change24h: 5.2,
+                volume: 267.72,
+                marketCap: 549000000000,
+                circulatingSupply: 19000000,
+                allTimeHigh: 69000,
+                icon: "fab fa-bitcoin"
+            },
+            ETH: {
+                name: "Ethereum",
+                symbol: "ETH",
+                price: 1789.73,
+                change24h: 7.3,
+                volume: 7342,
+                marketCap: 215000000000,
+                circulatingSupply: 120000000,
+                allTimeHigh: 4865,
+                icon: "fab fa-ethereum"
+            },
+            XRP: {
+                name: "Ripple",
+                symbol: "XRP",
+                price: 0.2974,
+                change24h: -0.50,
+                volume: 124681,
+                marketCap: 14200000000,
+                circulatingSupply: 48000000000,
+                allTimeHigh: 3.40,
+                icon: "fas fa-money-bill-wave"
+            },
+            LTC: {
+                name: "Litecoin",
+                symbol: "LTC",
+                price: 89.14,
+                change24h: 2.35,
+                volume: 89245,
+                marketCap: 6500000000,
+                circulatingSupply: 72000000,
+                allTimeHigh: 412,
+                icon: "fas fa-coins"
+            },
+            NEO: {
+                name: "Neo",
+                symbol: "NEO",
+                price: 12.06,
+                change24h: 4.95,
+                volume: 34256,
+                marketCap: 850000000,
+                circulatingSupply: 70000000,
+                allTimeHigh: 196,
+                icon: "fas fa-project-diagram"
+            },
+            SOL: {
+                name: "Solana",
+                symbol: "SOL",
+                price: 24.56,
+                change24h: 12.4,
+                volume: 45678,
+                marketCap: 9800000000,
+                circulatingSupply: 400000000,
+                allTimeHigh: 260,
+                icon: "fas fa-sun"
+            },
+            ADA: {
+                name: "Cardano",
+                symbol: "ADA",
+                price: 0.38,
+                change24h: 3.8,
+                volume: 34567,
+                marketCap: 13300000000,
+                circulatingSupply: 35000000000,
+                allTimeHigh: 3.10,
+                icon: "fas fa-chart-line"
+            }
+        };
+
+        const timeSalesData = [
+            { time: "10:26:41:19", price: 0.0000001234, size: 7645 },
+            { time: "10:01:12:11", price: 0.0000009653, size: 8489 },
+            { time: "09:24:02:12", price: 0.0000001244, size: 12459 },
+            { time: "09:21:04:10", price: 0.0000006993, size: 75496 },
+            { time: "08:26:01:10", price: 0.0000006953, size: 1225 },
+            { time: "08:22:12:13", price: 0.0000006963, size: 12586 },
+            { time: "08:20:12:18", price: 0.0000003244, size: 54769 },
+            { time: "08:03:12:19", price: 0.0000009653, size: 9633 }
+        ];
+
+        const walletData = [
+            { asset: "BTC", amount: 0.42, value: 12058.98 },
+            { asset: "ETH", amount: 5.7, value: 10199.46 },
+            { asset: "LTC", amount: 12.4, value: 1105.34 },
+            { asset: "USDC", amount: 500.00, value: 500.00 }
+        ];
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const markAllReadBtn = document.getElementById('markAllRead');
+        const viewAllNotifications = document.getElementById('viewAllNotifications');
+        const notificationList = document.getElementById('notificationList');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const formTabs = document.querySelectorAll('.form-tab');
+        const timeFilters = document.querySelectorAll('.time-filter');
+        const buyBtn = document.getElementById('buyBtn');
+        const sellBtn = document.getElementById('sellBtn');
+        const maxAmountBtn = document.getElementById('maxAmount');
+        const searchInput = document.getElementById('searchInput');
+        const depositBtn = document.getElementById('depositBtn');
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        const depositModal = document.getElementById('depositModal');
+        const withdrawModal = document.getElementById('withdrawModal');
+        const closeDepositModal = document.getElementById('closeDepositModal');
+        const closeWithdrawModal = document.getElementById('closeWithdrawModal');
+        const cancelDeposit = document.getElementById('cancelDeposit');
+        const cancelWithdraw = document.getElementById('cancelWithdraw');
+        const confirmDeposit = document.getElementById('confirmDeposit');
+        const confirmWithdraw = document.getElementById('confirmWithdraw');
+        const copyAddress = document.getElementById('copyAddress');
+        const depositAddress = document.getElementById('depositAddress');
+        const userBtn = document.getElementById('userBtn');
+        const userModal = document.getElementById('userModal');
+        const closeUserModal = document.getElementById('closeUserModal');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const faqLink = document.getElementById('faqLink');
+        const purchaseLink = document.getElementById('purchaseLink');
+        const timeSalesTable = document.getElementById('timeSalesTable').querySelector('tbody');
+        const marketOverviewTable = document.getElementById('marketOverviewTable').querySelector('tbody');
+        const walletTable = document.getElementById('walletTable').querySelector('tbody');
+        const amountInput = document.getElementById('amount');
+        const priceInput = document.getElementById('price');
+        const feeAmount = document.getElementById('feeAmount');
+        const totalAmount = document.getElementById('totalAmount');
+        const assetSelect = document.getElementById('asset');
+        const depositAsset = document.getElementById('depositAsset');
+        const withdrawAsset = document.getElementById('withdrawAsset');
+        const depositAmount = document.getElementById('depositAmount');
+        const withdrawAmount = document.getElementById('withdrawAmount');
+        const withdrawAddress = document.getElementById('withdrawAddress');
+        const withdrawFee = document.getElementById('withdrawFee');
+        const sectionContents = document.querySelectorAll('.section-content');
+
+        // Chart instances
+        let priceChart;
+        let portfolioChart;
+        let performanceChart;
+        let marketCapChart;
+        let volumeChart;
+
+        // Initialize the dashboard
+        function initDashboard() {
+            // Initialize charts
+            initPriceChart();
+            initPortfolioChart();
+            initPerformanceChart();
+            initMarketCapChart();
+            initVolumeChart();
+            
+            // Populate tables
+            populateTimeSalesTable();
+            populateMarketOverviewTable();
+            populateWalletTable();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Start real-time updates
+            startRealTimeUpdates();
+        }
+
+        // Initialize price chart
+        function initPriceChart() {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            // Generate random data for the chart
+            const labels = [];
+            const data = [];
+            let value = 28000;
+            
+            for (let i = 0; i < 30; i++) {
+                labels.push(`Day ${i + 1}`);
+                value += (Math.random() - 0.5) * 2000;
+                data.push(value);
+            }
+            
+            priceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'BTC Price',
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Price: $${context.parsed.y.toLocaleString()}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Initialize portfolio chart
+        function initPortfolioChart() {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            
+            portfolioChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bitcoin', 'Ethereum', 'Litecoin', 'USDC'],
+                    datasets: [{
+                        data: [12058.98, 10199.46, 1105.34, 500.00],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.8)',
+                            'rgba(72, 149, 239, 0.8)',
+                            'rgba(76, 201, 240, 0.8)',
+                            'rgba(40, 167, 69, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(72, 149, 239, 1)',
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(40, 167, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#f8f9fa'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize performance chart
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Generate random data for the chart
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            const data = [];
+            let value = 15000;
+            
+            for (let i = 0; i < 6; i++) {
+                value += (Math.random() - 0.3) * 3000;
+                data.push(value);
+            }
+            
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Value: $${context.parsed.y.toLocaleString()}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Initialize market cap chart
+        function initMarketCapChart() {
+            const ctx = document.getElementById('marketCapChart').getContext('2d');
+            
+            marketCapChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Bitcoin', 'Ethereum', 'Tether', 'BNB', 'XRP', 'Cardano', 'Dogecoin'],
+                    datasets: [{
+                        label: 'Market Cap (B)',
+                        data: [549, 215, 83, 42, 28, 13, 10],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.8)',
+                            'rgba(72, 149, 239, 0.8)',
+                            'rgba(76, 201, 240, 0.8)',
+                            'rgba(247, 37, 133, 0.8)',
+                            'rgba(248, 150, 30, 0.8)',
+                            'rgba(23, 162, 184, 0.8)',
+                            'rgba(108, 117, 125, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(72, 149, 239, 1)',
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(247, 37, 133, 1)',
+                            'rgba(248, 150, 30, 1)',
+                            'rgba(23, 162, 184, 1)',
+                            'rgba(108, 117, 125, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `$${context.raw}B`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    return '$' + value + 'B';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize volume chart
+        function initVolumeChart() {
+            const ctx = document.getElementById('volumeChart').getContext('2d');
+            
+            volumeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'ADA', 'DOGE', 'SOL', 'DOT', 'MATIC'],
+                    datasets: [{
+                        label: 'Volume (24h)',
+                        data: [15.2, 8.7, 32.5, 1.8, 2.3, 1.2, 0.9, 3.4, 0.7, 1.5],
+                        backgroundColor: 'rgba(67, 97, 238, 0.8)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.raw}B`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    return value + 'B';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Populate time & sales table
+        function populateTimeSalesTable() {
+            timeSalesTable.innerHTML = '';
+            
+            timeSalesData.forEach(trade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${trade.time}</td>
+                    <td>${trade.price}</td>
+                    <td>${trade.size.toLocaleString()}</td>
+                `;
+                timeSalesTable.appendChild(row);
+            });
+        }
+
+        // Populate market overview table
+        function populateMarketOverviewTable() {
+            marketOverviewTable.innerHTML = '';
+            
+            Object.keys(cryptoData).forEach(symbol => {
+                const crypto = cryptoData[symbol];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${symbol}</td>
+                    <td>$${crypto.price.toLocaleString()}</td>
+                    <td class="${crypto.change24h >= 0 ? 'positive' : 'negative'}">
+                        ${crypto.change24h >= 0 ? '+' : ''}${crypto.change24h}%
+                    </td>
+                `;
+                marketOverviewTable.appendChild(row);
+            });
+        }
+
+        // Populate wallet table
+        function populateWalletTable() {
+            walletTable.innerHTML = '';
+            
+            walletData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.asset}</td>
+                    <td>${item.amount}</td>
+                    <td>$${item.value.toLocaleString()}</td>
+                    <td>
+                        <button class="wallet-btn primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">TRADE</button>
+                    </td>
+                `;
+                walletTable.appendChild(row);
+            });
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', toggleSidebar);
+            
+            // Notification dropdown
+            notificationBtn.addEventListener('click', toggleNotificationDropdown);
+            markAllReadBtn.addEventListener('click', markAllAsRead);
+            viewAllNotifications.addEventListener('click', showAllNotifications);
+            
+            // Menu items
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    showSection(item.getAttribute('data-section'));
+                });
+            });
+            
+            // Form tabs
+            formTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    formTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    updateFormTab(tab.getAttribute('data-tab'));
+                });
+            });
+            
+            // Time filters
+            timeFilters.forEach(filter => {
+                filter.addEventListener('click', () => {
+                    timeFilters.forEach(f => f.classList.remove('active'));
+                    filter.classList.add('active');
+                    updateChartPeriod(filter.getAttribute('data-period'));
+                });
+            });
+            
+            // Buy/Sell buttons
+            buyBtn.addEventListener('click', placeBuyOrder);
+            sellBtn.addEventListener('click', placeSellOrder);
+            
+            // Max amount button
+            maxAmountBtn.addEventListener('click', setMaxAmount);
+            
+            // Search functionality
+            searchInput.addEventListener('keyup', handleSearch);
+            
+            // Deposit/Withdraw buttons
+            depositBtn.addEventListener('click', () => showModal('deposit'));
+            withdrawBtn.addEventListener('click', () => showModal('withdraw'));
+            
+            // Modal controls
+            closeDepositModal.addEventListener('click', () => hideModal('deposit'));
+            closeWithdrawModal.addEventListener('click', () => hideModal('withdraw'));
+            cancelDeposit.addEventListener('click', () => hideModal('deposit'));
+            cancelWithdraw.addEventListener('click', () => hideModal('withdraw'));
+            confirmDeposit.addEventListener('click', confirmDepositAction);
+            confirmWithdraw.addEventListener('click', confirmWithdrawAction);
+            copyAddress.addEventListener('click', copyDepositAddress);
+            
+            // User profile
+            userBtn.addEventListener('click', () => showModal('user'));
+            closeUserModal.addEventListener('click', () => hideModal('user'));
+            logoutBtn.addEventListener('click', logout);
+            settingsBtn.addEventListener('click', goToSettings);
+            
+            // Footer links
+            faqLink.addEventListener('click', showFAQ);
+            purchaseLink.addEventListener('click', showPurchase);
+            
+            // Amount/price input changes
+            amountInput.addEventListener('input', calculateTradeTotal);
+            priceInput.addEventListener('input', calculateTradeTotal);
+            assetSelect.addEventListener('change', updateTradeForm);
+            
+            // Deposit/withdraw asset changes
+            depositAsset.addEventListener('change', updateDepositForm);
+            withdrawAsset.addEventListener('change', updateWithdrawForm);
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                    notificationDropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+        }
+
+        // Toggle notification dropdown
+        function toggleNotificationDropdown(e) {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('active');
+        }
+
+        // Mark all notifications as read
+        function markAllAsRead() {
+            const unreadNotifications = document.querySelectorAll('.notification-item.unread');
+            
+            unreadNotifications.forEach(notification => {
+                notification.classList.remove('unread');
+            });
+            
+            document.querySelector('.notification-badge').style.display = 'none';
+            showToast('All notifications marked as read');
+        }
+
+        // Show all notifications
+        function showAllNotifications(e) {
+            e.preventDefault();
+            
+            notificationList.innerHTML += `
+                <div class="notification-item">
+                    <div class="notification-message">New security alert: Login from new device detected</div>
+                    <div class="notification-time">3 days ago</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-message">Your account has been verified successfully</div>
+                    <div class="notification-time">1 week ago</div>
+                </div>
+            `;
+            
+            showToast('Showing all notifications');
+        }
+
+        // Show section
+        function showSection(section) {
+            sectionContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.getElementById(`${section}-section`).classList.add('active');
+            showToast(`Showing ${section} section`);
+        }
+
+        // Update form tab
+        function updateFormTab(tab) {
+            showToast(`Switched to ${tab} tab`);
+        }
+
+        // Update chart period
+        function updateChartPeriod(period) {
+            // Generate new data based on period
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            const labels = [];
+            const data = [];
+            let value = 28000;
+            let count = 30;
+            let multiplier = 2000;
+            
+            switch(period) {
+                case '1D':
+                    count = 24;
+                    multiplier = 500;
+                    break;
+                case '1W':
+                    count = 7;
+                    multiplier = 1000;
+                    break;
+                case '1M':
+                    count = 30;
+                    multiplier = 2000;
+                    break;
+                case '1Y':
+                    count = 12;
+                    multiplier = 5000;
+                    break;
+                case 'ALL':
+                    count = 60;
+                    multiplier = 10000;
+                    value = 10000;
+                    break;
+            }
+            
+            for (let i = 0; i < count; i++) {
+                labels.push(period === '1D' ? `${i}:00` : period === '1W' ? `Day ${i + 1}` : period === '1M' ? `Day ${i + 1}` : period === '1Y' ? `Month ${i + 1}` : `Point ${i + 1}`);
+                value += (Math.random() - 0.5) * multiplier;
+                data.push(value);
+            }
+            
+            priceChart.data.labels = labels;
+            priceChart.data.datasets[0].data = data;
+            priceChart.update();
+            
+            showToast(`Showing ${period} chart`);
+        }
+
+        // Place buy order
+        function placeBuyOrder() {
+            const amount = parseFloat(amountInput.value);
+            const price = parseFloat(priceInput.value.replace('$', ''));
+            const asset = assetSelect.value;
+            
+            if (isNaN(amount)) {
+                showToast('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            if (isNaN(price)) {
+                showToast('Please enter a valid price', 'error');
+                return;
+            }
+            
+            const total = amount * price;
+            showToast(`Buy order placed for ${amount} ${asset} at $${price.toFixed(2)} (Total: $${total.toFixed(2)})`, 'success');
+            
+            // Reset form
+            amountInput.value = '';
+            priceInput.value = '';
+            feeAmount.textContent = '0.0000000 USDC';
+            totalAmount.textContent = '0.0000000 USDC';
+        }
+
+        // Place sell order
+        function placeSellOrder() {
+            const amount = parseFloat(amountInput.value);
+            const price = parseFloat(priceInput.value.replace('$', ''));
+            const asset = assetSelect.value;
+            
+            if (isNaN(amount)) {
+                showToast('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            if (isNaN(price)) {
+                showToast('Please enter a valid price', 'error');
+                return;
+            }
+            
+            const total = amount * price;
+            showToast(`Sell order placed for ${amount} ${asset} at $${price.toFixed(2)} (Total: $${total.toFixed(2)})`, 'success');
+            
+            // Reset form
+            amountInput.value = '';
+            priceInput.value = '';
+            feeAmount.textContent = '0.0000000 USDC';
+            totalAmount.textContent = '0.0000000 USDC';
+        }
+
+        // Set max amount
+        function setMaxAmount() {
+            const asset = assetSelect.value;
+            let maxAmount = 0;
+            
+            // In a real app, this would check the user's balance
+            switch(asset) {
+                case 'BTC':
+                    maxAmount = 0.042069;
+                    break;
+                case 'ETH':
+                    maxAmount = 1.23456;
+                    break;
+                case 'LTC':
+                    maxAmount = 5.67890;
+                    break;
+                case 'XRP':
+                    maxAmount = 1000;
+                    break;
+            }
+            
+            amountInput.value = maxAmount;
+            calculateTradeTotal();
+            showToast(`Max amount set for ${asset}`);
+        }
+
+        // Handle search
+        function handleSearch(e) {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.trim();
+                
+                if (query) {
+                    // In a real app, this would search for the cryptocurrency
+                    showToast(`Searching for: ${query}`);
+                    
+                    // Highlight matching crypto cards
+                    const cryptoCards = document.querySelectorAll('.crypto-card');
+                    cryptoCards.forEach(card => {
+                        if (card.getAttribute('data-coin').toLowerCase().includes(query.toLowerCase())) {
+                            card.style.borderColor = 'var(--primary)';
+                            card.style.boxShadow = '0 0 0 2px var(--primary)';
+                            
+                            setTimeout(() => {
+                                card.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                                card.style.boxShadow = 'var(--card-shadow)';
+                            }, 2000);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Show modal
+        function showModal(modal) {
+            switch(modal) {
+                case 'deposit':
+                    updateDepositForm();
+                    depositModal.style.display = 'flex';
+                    break;
+                case 'withdraw':
+                    updateWithdrawForm();
+                    withdrawModal.style.display = 'flex';
+                    break;
+                case 'user':
+                    userModal.style.display = 'flex';
+                    break;
+            }
+        }
+
+        // Hide modal
+        function hideModal(modal) {
+            switch(modal) {
+                case 'deposit':
+                    depositModal.style.display = 'none';
+                    break;
+                case 'withdraw':
+                    withdrawModal.style.display = 'none';
+                    break;
+                case 'user':
+                    userModal.style.display = 'none';
+                    break;
+            }
+        }
+
+        // Update deposit form
+        function updateDepositForm() {
+            const asset = depositAsset.value;
+            let address = '';
+            
+            switch(asset) {
+                case 'BTC':
+                    address = '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5';
+                    break;
+                case 'ETH':
+                    address = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
+                    break;
+                case 'USDC':
+                    address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+                    break;
+            }
+            
+            depositAddress.textContent = address;
+        }
+
+        // Update withdraw form
+        function updateWithdrawForm() {
+            const asset = withdrawAsset.value;
+            let fee = '';
+            
+            switch(asset) {
+                case 'BTC':
+                    fee = '0.0005 BTC';
+                    break;
+                case 'ETH':
+                    fee = '0.005 ETH';
+                    break;
+                case 'USDC':
+                    fee = '1 USDC';
+                    break;
+            }
+            
+            withdrawFee.textContent = fee;
+        }
+
+        // Confirm deposit
+        function confirmDepositAction() {
+            const asset = depositAsset.value;
+            const amount = depositAmount.value;
+            
+            if (!amount || parseFloat(amount) <= 0) {
+                showToast('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            // Generate new address
+            const newAddress = generateCryptoAddress(asset);
+            depositAddress.textContent = newAddress;
+            depositAmount.value = '';
+            
+            showToast(`New ${asset} deposit address generated`, 'success');
+        }
+
+        // Confirm withdraw
+        function confirmWithdrawAction() {
+            const asset = withdrawAsset.value;
+            const amount = parseFloat(withdrawAmount.value);
+            const address = withdrawAddress.value.trim();
+            
+            if (isNaN(amount) || amount <= 0) {
+                showToast('Please enter a valid amount', 'error');
+                return;
+            }
+            
+            if (!address) {
+                showToast('Please enter a destination address', 'error');
+                return;
+            }
+            
+            // In a real app, this would process the withdrawal
+            withdrawAmount.value = '';
+            withdrawAddress.value = '';
+            hideModal('withdraw');
+            
+            showToast(`Withdrawal request for ${amount} ${asset} submitted`, 'success');
+            
+            // Add notification
+            const notification = document.createElement('div');
+            notification.className = 'notification-item unread';
+            notification.innerHTML = `
+                <div class="notification-message">Withdrawal request for ${amount} ${asset} submitted</div>
+                <div class="notification-time">just now</div>
+            `;
+            notificationList.insertBefore(notification, notificationList.firstChild);
+            
+            // Update badge
+            const badge = document.querySelector('.notification-badge');
+            badge.textContent = parseInt(badge.textContent) + 1;
+            badge.style.display = 'flex';
+        }
+
+        // Copy deposit address
+        function copyDepositAddress() {
+            const address = depositAddress.textContent;
+            navigator.clipboard.writeText(address);
+            showToast('Address copied to clipboard');
+        }
+
+        // Logout
+        function logout() {
+            showToast('Logging out...');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+        }
+
+        // Go to settings
+        function goToSettings() {
+            hideModal('user');
+            showSection('settings');
+            showToast('Redirecting to settings...');
+        }
+
+        // Show FAQ
+        function showFAQ(e) {
+            e.preventDefault();
+            showToast('Showing FAQ section');
+        }
+
+        // Show purchase
+        function showPurchase(e) {
+            e.preventDefault();
+            showToast('Redirecting to purchase page');
+        }
+
+        // Calculate trade total
+        function calculateTradeTotal() {
+            const amount = parseFloat(amountInput.value);
+            const price = parseFloat(priceInput.value.replace('$', ''));
+            
+            if (!isNaN(amount) && !isNaN(price)) {
+                const total = amount * price;
+                const fee = total * 0.001; // 0.1% fee
+                
+                feeAmount.textContent = `${fee.toFixed(7)} USDC`;
+                totalAmount.textContent = `${(total + fee).toFixed(7)} USDC`;
+            }
+        }
+
+        // Update trade form
+        function updateTradeForm() {
+            const asset = assetSelect.value;
+            const crypto = cryptoData[asset] || { price: 100 };
+            
+            // Update price placeholder with current price
+            priceInput.placeholder = `$${crypto.price.toFixed(2)}`;
+            
+            // Reset form
+            amountInput.value = '';
+            priceInput.value = '';
+            feeAmount.textContent = '0.0000000 USDC';
+            totalAmount.textContent = '0.0000000 USDC';
+        }
+
+        // Generate crypto address
+        function generateCryptoAddress(asset) {
+            const chars = '0123456789ABCDEF';
+            let address = '';
+            
+            switch(asset) {
+                case 'BTC':
+                    address = '3';
+                    for (let i = 0; i < 33; i++) {
+                        address += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    break;
+                case 'ETH':
+                    address = '0x';
+                    for (let i = 0; i < 40; i++) {
+                        address += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    break;
+                case 'USDC':
+                    address = '0x';
+                    for (let i = 0; i < 40; i++) {
+                        address += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+                    break;
+            }
+            
+            return address;
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-message">${message}</div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Start real-time updates
+        function startRealTimeUpdates() {
+            // Update prices every 5 seconds
+            setInterval(updatePrices, 5000);
+            
+            // Add random trades every 3-10 seconds
+            setInterval(addRandomTrade, Math.random() * 7000 + 3000);
+        }
+
+        // Update prices
+        function updatePrices() {
+            Object.keys(cryptoData).forEach(symbol => {
+                // Random price change (-2% to +2%)
+                const change = (Math.random() * 4 - 2) / 100;
+                cryptoData[symbol].price *= (1 + change);
+                cryptoData[symbol].change24h += change;
+                
+                // Update market overview table
+                const rows = marketOverviewTable.querySelectorAll('tr');
+                rows.forEach(row => {
+                    if (row.cells[0].textContent === symbol) {
+                        row.cells[1].textContent = `$${cryptoData[symbol].price.toFixed(2)}`;
+                        row.cells[2].textContent = `${cryptoData[symbol].change24h >= 0 ? '+' : ''}${cryptoData[symbol].change24h.toFixed(2)}%`;
+                        row.cells[2].className = cryptoData[symbol].change24h >= 0 ? 'positive' : 'negative';
+                    }
+                });
+                
+                // Update crypto cards
+                const cryptoCard = document.querySelector(`.crypto-card[data-coin="${symbol.toLowerCase()}"]`);
+                if (cryptoCard) {
+                    const priceElement = cryptoCard.querySelector('.crypto-price');
+                    const changeElement = cryptoCard.querySelector('.card-change:not(.crypto-change)');
+                    
+                    if (priceElement && changeElement) {
+                        priceElement.textContent = symbol === 'XRP' || symbol === 'NEO' ? 
+                            `$${cryptoData[symbol].price.toFixed(2)}` : 
+                            `${(cryptoData[symbol].price / 1000).toFixed(7)} ${symbol}`;
+                        
+                        changeElement.textContent = `${cryptoData[symbol].change24h >= 0 ? '+' : ''}${cryptoData[symbol].change24h.toFixed(2)}%`;
+                        changeElement.className = `card-change ${cryptoData[symbol].change24h >= 0 ? 'positive' : 'negative'}`;
+                    }
+                }
+            });
+            
+            // Randomly add notifications for significant price changes
+            if (Math.random() > 0.7) {
+                const symbols = Object.keys(cryptoData);
+                const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                const crypto = cryptoData[randomSymbol];
+                
+                if (Math.abs(crypto.change24h) > 1.5) {
+                    const notification = document.createElement('div');
+                    notification.className = 'notification-item unread';
+                    notification.innerHTML = `
+                        <div class="notification-message">${randomSymbol} price ${crypto.change24h >= 0 ? 'increased' : 'decreased'} by ${Math.abs(crypto.change24h).toFixed(2)}% to $${crypto.price.toFixed(2)}</div>
+                        <div class="notification-time">just now</div>
+                    `;
+                    notificationList.insertBefore(notification, notificationList.firstChild);
+                    
+                    // Update badge
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge.style.display === 'none') {
+                        badge.style.display = 'flex';
+                        badge.textContent = '1';
+                    } else {
+                        badge.textContent = parseInt(badge.textContent) + 1;
+                    }
+                    
+                    // Show toast
+                    showToast(`${randomSymbol} price alert: ${crypto.change24h >= 0 ? '▲' : '▼'} ${Math.abs(crypto.change24h).toFixed(2)}%`);
+                }
+            }
+        }
+
+        // Add random trade
+        function addRandomTrade() {
+            const symbols = Object.keys(cryptoData);
+            const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+            const crypto = cryptoData[randomSymbol];
+            
+            // Generate random trade data
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+            const time = `${hours}:${minutes}:${seconds}:${milliseconds}`;
+            
+            // Random price within 1% of current price
+            const price = crypto.price * (1 + (Math.random() * 0.02 - 0.01));
+            const size = Math.floor(Math.random() * 10000) + 100;
+            
+            // Add to time & sales table
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${time}</td>
+                <td>${price.toFixed(8)}</td>
+                <td>${size.toLocaleString()}</td>
+            `;
+            
+            // Insert at the top and remove the last row if more than 20
+            timeSalesTable.insertBefore(row, timeSalesTable.firstChild);
+            if (timeSalesTable.children.length > 20) {
+                timeSalesTable.removeChild(timeSalesTable.lastChild);
+            }
+        }
+
+        // Initialize the dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
