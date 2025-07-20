@@ -56,23 +56,11 @@ This project is designed to showcase:
 | **Google Fonts (Poppins)** | Typography |
 | **Glass Morphism** | Modern UI effect |
 
----
-
-## **📂 File Structure**
-```
-📂 HyperAdmin/
-├── 📄 login.html          # Login page (stores username in localStorage)
-├── 📄 dash.html           # Main dashboard (reads username from localStorage)
-├── 📄 357bae8e58c0931383a2b9e541108307.png  # Dashboard reference image
-```
-
----
 
 ## **🚀 How It Works (Frontend Simulation)**
 ### **1. Login Flow**
 - User enters **username** and **password** (no real auth, just frontend simulation).  
-- Username is stored in `localStorage`.  
-- Redirects to `dash.html` with a welcome message.  
+- Username is stored in `localStorage`.   
 
 ### **2. Dashboard Functionality**
 - **Real-Time Data:** JavaScript simulates price fluctuations every 5 seconds.  
@@ -104,23 +92,26 @@ This project is designed to showcase:
 
 ## **🔐 Security Note (For Demo Only)**
 ⚠️ **This is a frontend-only demo.**  
-- No real authentication (no backend).  
-- Passwords are **not** validated or stored securely.  
-- For a real app, integrate with **Firebase, Auth0, or Node.js**.  
-
----
-
-## **📈 Possible Improvements**
-✅ **Connect to a real API** (CoinGecko, Binance, etc.) for live prices.  
-✅ **Add Firebase Auth** for real user authentication.  
-✅ **Implement a Node.js backend** for trade execution.  
-✅ **Add more crypto assets & advanced charts**.  
-✅ **Portfolio performance tracking over time**.  
-
----
+- No real authentication (no backend).    
 
 ## **🎯 Conclusion**
 **HyperAdmin** is a **visually appealing, interactive crypto dashboard** that demonstrates modern frontend techniques. While it currently simulates real-time data, it can be extended into a **full-fledged trading platform** with backend integration.
+
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e1.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e2.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e3.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e4.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e5.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e6.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e7.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e8.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e9.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e10.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e11.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e12.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e13.png)
+![image alt](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/blob/e70be859afbbfb3605f58b613d033eb6ce9c559e/e14.png)
+
 
 🚀 **Great for portfolios, learning, or as a template for a real crypto app!**  
 
