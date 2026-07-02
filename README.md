@@ -236,4 +236,7 @@ new Chart(ctx, {
 <div align="center">
 
 Made with ⚡ 
+
+⭐ If you find this project useful, please give it a star!
+
 </div>
