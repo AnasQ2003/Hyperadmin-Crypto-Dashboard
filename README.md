@@ -13,8 +13,6 @@
 
 > **HyperAdmin** is a high-fidelity, single-page application prototype designed to simulate a modern cryptocurrency portfolio dashboard. Engineered with a premium **glassmorphic dark UI**, dynamic Chart.js visualizations, real-time simulated price ticks, and full client-side session persistence.
 
-[🔗 View Repository](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard) · [🐛 Report Bug](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/issues) · [✨ Request Feature](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/issues)
-
 </div>
 
 ---
