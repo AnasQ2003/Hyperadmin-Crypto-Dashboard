@@ -229,12 +229,11 @@ new Chart(ctx, {
 
 ## 📄 License
 
-Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
+© 2026 **Anas Ahmed Qureshi**. All Rights Reserved.
 
 ---
 
 <div align="center">
 
-Made with ⚡ by [AnasQ2003](https://github.com/AnasQ2003)
-
+Made with ⚡ 
 </div>
