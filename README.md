@@ -13,6 +13,10 @@
 
 > **HyperAdmin** is a high-fidelity, single-page application prototype designed to simulate a modern cryptocurrency portfolio dashboard. Engineered with a premium **glassmorphic dark UI**, dynamic Chart.js visualizations, real-time simulated price ticks, and full client-side session persistence.
 
+### 🌐 [**Live Demo → anasq2003.github.io/Hyperadmin-Crypto-Dashboard**](https://anasq2003.github.io/Hyperadmin-Crypto-Dashboard/)
+
+[🔗 View Repository](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard) · [🐛 Report Bug](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/issues) · [✨ Request Feature](https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/issues)
+
 </div>
 
 ---
@@ -38,45 +42,28 @@
 
 ## 🖥️ Tech Stack
 
-HyperAdmin is a lightweight, frontend-only application that delivers high-performance mock execution:
-
 | Component | Technology | Purpose |
 |---|---|---|
 | **Core Layout** | **HTML5** | Semantic layout structure, sidebar menus, and dialog controls |
-| **Theme & Design** | **CSS3** | Premium glassmorphism effects (using `backdrop-filter`), CSS Grid/Flex layout systems, custom variables |
-| **Interactivity** | **Vanilla JS** | Client-side routing, modular overlay triggers, event handling, real-time database generators |
-| **Data Graphs** | **Chart.js** | Premium, high-performance canvas line charts, donut allocations, and vertical bar representations |
-| **Session States**| **LocalStorage** | Session caching for active login credentials, UI notification parameters, and 2FA states |
+| **Theme & Design** | **CSS3** | Premium glassmorphism effects (`backdrop-filter`), CSS Grid/Flex, custom variables |
+| **Interactivity** | **Vanilla JS** | Client-side routing, modular overlay triggers, real-time data generators |
+| **Data Graphs** | **Chart.js** | Line charts, donut allocations, and vertical bar representations |
+| **Session States**| **LocalStorage** | Session caching for login credentials, notification params, and 2FA states |
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-A modern web browser (Chrome, Firefox, Safari, Edge). No Node.js build pipeline required.
-
-### Quick Start Options
-
-#### Option A: Local File Path
 ```bash
-# Clone the repository
 git clone https://github.com/AnasQ2003/Hyperadmin-Crypto-Dashboard.git
-
-# Navigate to project root
 cd Hyperadmin-Crypto-Dashboard
-
-# Open in your web browser
-# Double-click login.html or run:
 start login.html      # Windows
 open login.html       # macOS
 ```
 
-#### Option B: Hot-Reload Server (Recommended)
+Or run a local server:
 ```bash
-# Run a quick local Python server
 python -m http.server 8000
-
-# Access your app in the browser
 # http://localhost:8000/login.html
 ```
 
@@ -86,32 +73,22 @@ python -m http.server 8000
 
 ```
 Hyperadmin-Crypto-Dashboard/
-│
-├── login.html              # 🔐 Secure login portal with abstract 3D backdrop
-├── index.html              # 💻 Main Single Page Application containing all dashboard sections
-│                           #    Sections navigated dynamically via client-side JavaScript router:
-│                           #      ├─ #dashboard      (Overview stats, price charts, order logs, trade panel)
-│                           #      ├─ #wallet         (Asset breakdowns, deposit/withdraw overlays, allocation donut)
-│                           #      ├─ #transactions   (Historical ledger lists)
-│                           #      ├─ #portfolio      (Multi-month performance graphs)
-│                           #      ├─ #market-overview(Bar charts, gainers/losers tables)
-│                           #      ├─ #settings       (Profile details editing forms)
-│                           #      └─ #notifications  (Recent alarm logs, option toggles)
-│
-├── e1.png                  # Login screen
-├── e2.png                  # Dashboard primary page (dark mode)
-├── e3.png                  # Dashboard - Time & Sales + Market Overview lists
-├── e4.png                  # Dashboard - Top-right active Notifications dropdown
-├── e5.png                  # Wallet - Balance details + Allocation donut chart
-├── e6.png                  # Wallet - Deposit funds address generator modal
-├── e7.png                  # Wallet - Withdraw funds form modal
-├── e8.png                  # Transactions - Historic trade ledger list
-├── e9.png                  # Portfolio - Performance indicators & line chart
-├── e10.png                 # Settings - Account details + password form
-├── e11.png                 # Settings - Alert thresholds + recent notifications
-├── e12.png                 # Markets - Market Cap bar chart & gainers lists
-├── e13.png                 # Markets - 24h Trading Volume bar chart
-├── e14.png                 # Interactive charting - chart tooltip highlight on hover
+├── login.html    # 🔐 Secure login portal
+├── index.html    # 💻 Main SPA (dashboard, wallet, transactions, portfolio, market, settings)
+├── e1.png        # Login screen
+├── e2.png        # Dashboard primary page
+├── e3.png        # Time & Sales + Market Overview
+├── e4.png        # Notifications dropdown
+├── e5.png        # Wallet balances + donut chart
+├── e6.png        # Deposit modal
+├── e7.png        # Withdraw modal
+├── e8.png        # Transactions ledger
+├── e9.png        # Portfolio performance chart
+├── e10.png       # Settings — account details
+├── e11.png       # Settings — alert thresholds
+├── e12.png       # Markets — Market Cap chart
+├── e13.png       # Markets — 24h Volume chart
+├── e14.png       # Chart hover tooltip
 └── README.md
 ```
 
@@ -119,79 +96,97 @@ Hyperadmin-Crypto-Dashboard/
 
 ## 📸 Screen Preview Gallery
 
-### 🔐 Authenticating & Login
+### 🔐 Authentication & Login
 
-| Login Portal | Dashboard Notifications |
-|:-:|:-:|
-| ![Login Card](e1.png) | ![Active Notifications Dropdown](e4.png) |
-| *Glassmorphic credentials container over 3D background* | *Quick-glance price action alerts popup menu* |
+**Login Portal**
+![Login Card](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e1.png)
+
+---
+
+**Dashboard Notifications**
+![Active Notifications Dropdown](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e4.png)
 
 ---
 
 ### 📈 Core Dashboard & Charts
 
-| Primary Overview | Market Data Feeds |
-|:-:|:-:|
-| ![Primary Dashboard Dashboard](e2.png) | ![Time and Sales scrolled](e3.png) |
-| *Interactive 30-day BTC price line chart & trade terminal* | *Real-time Time & Sales order logs and Market Overview* |
+**Primary Overview**
+![Primary Dashboard](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e2.png)
+
+---
+
+**Market Data Feeds**
+![Time and Sales scrolled](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e3.png)
 
 ---
 
 ### 💼 Portfolio & Wallets
 
-| Wallet Balances & Allocation | Historical Performance |
-|:-:|:-:|
-| ![Wallet Balances and Donut](e5.png) | ![Portfolio performance over time](e9.png) |
-| *Balance sheet + Interactive Portfolio Allocation donut* | *Multi-month growth curves and asset yield stats* |
+**Wallet Balances & Allocation**
+![Wallet Balances and Donut](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e5.png)
+
+---
+
+**Historical Performance**
+![Portfolio performance over time](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e9.png)
 
 ---
 
 ### 🔄 Funds Transfers
 
-| Deposit Modal | Withdraw Modal |
-|:-:|:-:|
-| ![Deposit Funds Dialog](e6.png) | ![Withdraw Funds Dialog](e7.png) |
-| *Generated addresses with single-click clipboard copying* | *Destinations inputs with transaction gas estimates* |
+**Deposit Modal**
+![Deposit Funds Dialog](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e6.png)
+
+---
+
+**Withdraw Modal**
+![Withdraw Funds Dialog](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e7.png)
 
 ---
 
 ### 📑 Transactions & Market Analytics
 
-| Historic Ledger | Market Capitalization |
-|:-:|:-:|
-| ![Transactions Record table](e8.png) | ![Market Cap bar charts](e12.png) |
-| *Trade receipts database with green/yellow badges* | *Top Gainers / Losers + comparative market capitalization graphs* |
+**Historic Ledger**
+![Transactions Record table](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e8.png)
+
+---
+
+**Market Capitalization**
+![Market Cap bar charts](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e12.png)
 
 ---
 
 ### 📊 Trading Volumes & Interactive Elements
 
-| 24h Volume Charts | Line Chart Hover Details |
-|:-:|:-:|
-| ![Volume Charts scrolled](e13.png) | ![Hover tooltip demo](e14.png) |
-| *24-hour comparative trading volume bar chart* | *Interactive point-by-point hover metrics on Chart.js plots* |
+**24h Volume Charts**
+![Volume Charts scrolled](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e13.png)
+
+---
+
+**Line Chart Hover Details**
+![Hover tooltip demo](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e14.png)
 
 ---
 
 ### ⚙️ Account Management
 
-| Account Settings | Alert Rules & Security |
-|:-:|:-:|
-| ![Profile Editing Form](e10.png) | ![Threshold rules config](e11.png) |
-| *Username modifications, Email updates, and timezones config* | *Price alert checkboxes and historic notifications logs* |
+**Account Settings**
+![Profile Editing Form](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e10.png)
+
+---
+
+**Alert Rules & Security**
+![Threshold rules config](https://raw.githubusercontent.com/AnasQ2003/Hyperadmin-Crypto-Dashboard/main/e11.png)
 
 ---
 
 ## 🔄 Simulated Logic Architecture
 
-### 📊 Real-Time Market Ticks
-HyperAdmin executes a background event loop that updates currency rates every few seconds, generating realistic market data fluctuation:
 ```javascript
-// Simulating dynamic price fluctuations in the browser
 function simulatePriceTicks() {
   setInterval(() => {
     assets.forEach(asset => {
-      const changePercent = (Math.random() - 0.5) * 0.4; // +/- 0.2% max change
+      const changePercent = (Math.random() - 0.5) * 0.4;
       asset.price *= (1 + changePercent / 100);
       updateDashboardDOM(asset);
     });
@@ -199,17 +194,12 @@ function simulatePriceTicks() {
 }
 ```
 
-### 📈 Canvas Charting Implementation
-Donut charts are drawn dynamically using Chart.js configurations:
 ```javascript
 new Chart(ctx, {
   type: 'doughnut',
   data: {
     labels: ['Bitcoin', 'Ethereum', 'Litecoin', 'USDC'],
-    datasets: [{
-      data: [51.2, 30.9, 5.1, 12.8],
-      backgroundColor: ['#2563eb', '#3b82f6', '#60a5fa', '#10b981']
-    }]
+    datasets: [{ data: [51.2, 30.9, 5.1, 12.8], backgroundColor: ['#2563eb', '#3b82f6', '#60a5fa', '#10b981'] }]
   },
   options: { responsive: true, cutout: '70%' }
 });
@@ -229,13 +219,13 @@ new Chart(ctx, {
 
 ## 📄 License
 
-© 2026 **Anas Ahmed Qureshi**. All Rights Reserved.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-Made with ⚡ 
+Made with ⚡ by [AnasQ2003](https://github.com/AnasQ2003)
 
 ⭐ If you find this project useful, please give it a star!
 
