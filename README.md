@@ -220,7 +220,7 @@ new Chart(ctx, {
 ```
 MIT License
 
-Copyright (c) Hyperadmin-Crypto-Dashboard---2026 AnasQ2003
+Copyright (c) Hyperadmin-Crypto-Dashboard --- 2026 AnasQ2003
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
